@@ -2,18 +2,18 @@ import React, { createContext, useReducer } from "react";
 export const GlobalContext = createContext<any>(null);
 
 const initialState = {
-  connected: false,
+  fetch: false,
   color: false,
   entry: {},
 };
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
-    case "SET_CONNECTED":
-      localStorage.setItem("connected", action.payload);
+    case "SET_FETCH":
+      localStorage.setItem("fetch", action.payload);
       return {
         ...state,
-        connected: localStorage.getItem("connected"),
+        fetch: localStorage.getItem("fetch"),
       };
     case "SET_COLOR":
       localStorage.setItem("color", action.payload);

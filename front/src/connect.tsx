@@ -27,12 +27,10 @@ const InteractButton = ({ getStatus, x, y }: any) => {
   let color = data ? data[0]?.result : "white";
 
   function checkBound() {
+    dispatch({ type: "SET_FETCH", payload: false })
+
     if (x > 4 && y > 6) {
       toast.error("out of bounds")
-      setClicked(false)
-    }
-    if (x == 0 && y == 0) {
-      toast.error("no values")
       setClicked(false)
     }
     if (x > 4) {
@@ -43,10 +41,14 @@ const InteractButton = ({ getStatus, x, y }: any) => {
       toast.error("out of bounds")
       setClicked(false)
     }
+    else {
+      setClicked(true)
+    }
   }
 
   useEffect(() => {
     dispatch({ type: "SET_COLOR", payload: color })
+    dispatch({ type: "SET_FETCH", payload: true })
     setClicked(false)
   }, [clicked])
 
@@ -62,7 +64,7 @@ const InteractButton = ({ getStatus, x, y }: any) => {
           className="mb-4 bg-red-300 pl-2 md:mb-0 md:pl-0 md:pr-1 mx-auto"
           data-te-nav-item-ref>
           <span
-            onClick={() => { setClicked(true); checkBound() }}
+            onClick={() => { checkBound() }}
             className="p- mono_font text-white text-xl text-center transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2"
             data-te-nav-link-ref>
             {isLoading && <MoonLoader

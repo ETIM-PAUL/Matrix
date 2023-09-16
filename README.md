@@ -1,13 +1,6 @@
 # Sample Hardhat Project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+A simple matrix board that gets you color based on the co-ordinates you input. 
 
-Try running some of the following tasks:
+##contract address  -> 0x75FE4bE54453992C39e2a0F2D67bFb1621307Eb3
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```

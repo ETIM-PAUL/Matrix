@@ -32,7 +32,7 @@ const Matrix = ({ data, x, y }: _Matrix) => {
         element.style.backgroundColor = state?.color
       }
     }
-  }, [state?.color])
+  }, [state?.fetch])
 
   return (
     <div className="grid-container">

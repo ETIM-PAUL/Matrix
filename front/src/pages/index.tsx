@@ -195,6 +195,9 @@ export default function Home() {
       </div>
 
       <NoInteract getStatus={getStatus} x={x} y={y} />
+      {state?.color !== "undefined" &&
+        <span className='w-full text-center block'>Current Color - {state?.color}</span>
+      }
 
     </main>
   )
