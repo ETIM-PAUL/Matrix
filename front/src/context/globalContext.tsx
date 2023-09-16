@@ -3,6 +3,8 @@ export const GlobalContext = createContext<any>(null);
 
 const initialState = {
   connected: false,
+  color: false,
+  entry: {},
 };
 
 const reducer = (state: any, action: any) => {
@@ -12,6 +14,18 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         connected: localStorage.getItem("connected"),
+      };
+    case "SET_COLOR":
+      localStorage.setItem("color", action.payload);
+      return {
+        ...state,
+        color: localStorage.getItem("color"),
+      };
+    case "SET_ENTRY":
+      localStorage.setItem("entry", action.payload);
+      return {
+        ...state,
+        entry: localStorage.getItem("entry"),
       };
     default:
       return state;

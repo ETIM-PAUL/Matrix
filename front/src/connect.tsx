@@ -1,11 +1,55 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from './context/globalContext'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { MoonLoader } from 'react-spinners';
+import { readContract } from '@wagmi/core'
+import { MatrixABI } from './RandomMatrix'
+import { useContractRead, useContractReads, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { toast } from 'react-toastify';
 
 
-const InteractButton = ({ getStatus }: any) => {
+const InteractButton = ({ getStatus, x, y }: any) => {
   const { state, dispatch } = useContext(GlobalContext)
+  const [clicked, setClicked] = useState(false)
+
+  const { data, isError, isLoading } = useContractReads({
+    contracts: [
+      {
+        address: "0x0073fA7F3BC4f5EC5035B1B50c05A48b43D048eF",
+        //@ts-ignore
+        abi: MatrixABI?.abi,
+        functionName: 'getColor',
+        args: [x, y],
+      }
+    ],
+  });
+
+  let color = data ? data[0]?.result : "white";
+
+  function checkBound() {
+    if (x > 4 && y > 6) {
+      toast.error("out of bounds")
+      setClicked(false)
+    }
+    if (x == 0 && y == 0) {
+      toast.error("no values")
+      setClicked(false)
+    }
+    if (x > 4) {
+      toast.error("out of bounds")
+      setClicked(false)
+    }
+    if (y > 6) {
+      toast.error("out of bounds")
+      setClicked(false)
+    }
+  }
+
+  useEffect(() => {
+    dispatch({ type: "SET_COLOR", payload: color })
+    setClicked(false)
+  }, [clicked])
+
 
   return (
     <div>
@@ -14,24 +58,20 @@ const InteractButton = ({ getStatus }: any) => {
         id="navbarSupportedContent3"
         data-te-collapse-item>
 
-        {/* <div
-          className="list-style-none mr-auto flex w-full flex-col pl-0 md:mt-1 md:flex-row"
-          data-te-navbar-nav-ref> */}
-
         <div
           className="mb-4 bg-red-300 pl-2 md:mb-0 md:pl-0 md:pr-1 mx-auto"
           data-te-nav-item-ref>
           <span
+            onClick={() => { setClicked(true); checkBound() }}
             className="p- mono_font text-white text-xl text-center transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2"
             data-te-nav-link-ref>
-            {getStatus !== "Get Color" && <MoonLoader
+            {isLoading && <MoonLoader
               color={"#ffffff"}
               size={20} />}
             <span>
               {getStatus}
             </span>
           </span>
-          {/* </div> */}
         </div>
       </div>
     </div>

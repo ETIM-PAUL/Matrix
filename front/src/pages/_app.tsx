@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app'
 import { getDefaultWallets, RainbowKitProvider, darkTheme, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css'
 import GlobalProvider from '../context/globalContext'
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
   baseGoerli,
@@ -24,11 +26,6 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 );
 
-// const { connectors } = getDefaultWallets({
-//   appName: 'Metro',
-//   projectId: '',
-//   chains,
-// });
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
@@ -62,6 +59,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <GlobalProvider>
           <Component {...pageProps} />
         </GlobalProvider>
+        <ToastContainer />
       </RainbowKitProvider>
     </WagmiConfig>
   )

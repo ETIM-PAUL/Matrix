@@ -1,18 +1,20 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '@/context/globalContext';
 import Head from 'next/head';
 import Matrix from '@/matrix';
-import InteractButton from '@/connect';
+import dynamic from 'next/dynamic';
 
-const inter = Inter({ subsets: ['latin'] })
+const NoInteract = dynamic(
+  () => import('@/connect'),
+  { ssr: false }
+)
 
 export default function Home() {
   const { state, dispatch } = useContext(GlobalContext)
   const [getStatus, setGetStatus] = useState("Get Color")
+  const [x, setx] = useState("")
+  const [y, sety] = useState("")
 
   const numbersArray: any = [
     [1, 2, 3, 4, 5, 6, 7],
@@ -24,7 +26,7 @@ export default function Home() {
 
   return (
     <main
-      className={`fle mono h-screen ${inter.className}`}
+      className={`fle mono h-screen`}
     >
       <Head>
         <link href="https://fonts.googleapis.com/css2?family=Geostar&family=Space+Grotesk&family=Space+Mono&display=swap" rel="stylesheet" />
@@ -140,21 +142,17 @@ export default function Home() {
       <div className="bg-whit w-full md:max-w-2xl rounded-xl mx-auto">
         <div>
           <div className="container mx-auto mt-8">
-            <Matrix data={numbersArray} />
+            <Matrix data={numbersArray} x={x} y={y} />
           </div>
         </div>
       </div>
 
       <div className="mx-auto flex justify-center py-8 space-x-8">
-        <input type="text" placeholder="X-coordinate" className="input input-bordered w-full max-w-xs" />
-        <input type="text" placeholder="Y-coordinate" className="input input-bordered w-full max-w-xs" />
+        <input type="number" max={4} value={x} onChange={(e) => setx(e.target.value)} placeholder="X-coordinate" className="input input-bordered w-full max-w-xs" />
+        <input type="number" max={6} value={y} onChange={(e) => sety(e.target.value)} placeholder="Y-coordinate" className="input input-bordered w-full max-w-xs" />
       </div>
 
-      <InteractButton getStatus={getStatus} />
-
-
-
-
+      <NoInteract getStatus={getStatus} x={x} y={y} />
 
     </main>
   )
