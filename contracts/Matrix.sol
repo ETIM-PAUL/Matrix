@@ -33,10 +33,6 @@ contract RandomMatrix {
 
     // Fill the matrix with random numbers
     function fillMatrix() public {
-        require(
-            msg.sender == owner,
-            "You no fit set am, na only idan fit do am"
-        );
         for (uint8 i = 0; i < 5; i++) {
             for (uint8 j = 0; j < 7; j++) {
                 matrix[i][j] = random(abi.encodePacked(i * j, "idan", j + 1));

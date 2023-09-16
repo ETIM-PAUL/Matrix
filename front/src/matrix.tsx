@@ -1,7 +1,6 @@
 // src/Matrix.js
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from './context/globalContext';
-import { toast } from 'react-toastify';
 
 interface _Matrix {
   data: [];
@@ -19,6 +18,7 @@ const Matrix = ({ data, x, y }: _Matrix) => {
   useEffect(() => {
 
     //Logic to handle setting and resetting of colors
+
     setPrevX(x)
     setPrevY(y)
     const prevElement = document.getElementById(prevX + "" + prevY);
@@ -40,15 +40,10 @@ const Matrix = ({ data, x, y }: _Matrix) => {
         row.map((cellValue: number, cellIndex: number) => (
           <div
             id={rowIndex + "" + cellIndex}
-            onClick={(e: any) => {
-              e.target.style.backgroundColor = "red";
-              console.log(rowIndex, cellIndex)
-            }}
             key={`${rowIndex}-${cellIndex}`}
-            style={{ padding: "30px" }}
+            style={{ padding: "20px" }}
             className="grid-item bg-[#000000] text-xs text-center"
           >
-
           </div>
         ))
       ))}
