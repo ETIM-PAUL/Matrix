@@ -1,15 +1,18 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '@/context/globalContext';
 import Head from 'next/head';
-import Matrix from '@/matrix';
 import dynamic from 'next/dynamic';
-import { useConnect, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useAccount, useConnect, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import { MatrixABI } from '@/RandomMatrix';
 import { toast } from 'react-toastify';
 
 const NoInteract = dynamic(
   () => import('@/connect'),
+  { ssr: false }
+)
+const MatrixSSR = dynamic(
+  () => import('@/matrix'),
   { ssr: false }
 )
 
@@ -20,7 +23,7 @@ export default function Home() {
   const [clicked, setClicked] = useState(false)
   const [y, sety] = useState("")
 
-  const connected = useConnect()
+  const { isConnected, address } = useAccount()
 
   const numbersArray: any = [
     [1, 2, 3, 4, 5, 6, 7],
@@ -43,6 +46,15 @@ export default function Home() {
       toast.success(`Matrix Reshuffle`);
     },
   })
+
+  useEffect(() => {
+    dispatch({
+      type: "SET_CONNECTED",
+      payload: isConnected
+    })
+  }, [isConnected])
+  console.log(typeof state?.connected)
+
   return (
     <main
       className={`fle mono h-screen`}
@@ -57,104 +69,106 @@ export default function Home() {
         <div className="flex-none gap-2">
           <div className="form-control">
 
-            {/* customized rainbow kit */}
+
             <div className="flex gap-4 hidden sm:flex">
-              <ConnectButton.Custom>
-                {({
-                  account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted,
-                }) => {
-                  // Note: If your app doesn't use authentication, you
-                  // can remove all 'authenticationStatus' checks
-                  const ready = mounted && authenticationStatus !== 'loading';
-                  const connected = ready &&
-                    account
-                    &&
-                    chain &&
-                    (!authenticationStatus ||
-                      authenticationStatus === 'authenticated');
-                  return (
-                    <div
-                      {...(!ready && {
-                        'aria-hidden': true,
-                        'style': {
-                          opacity: 0,
-                          pointerEvents: 'none',
-                          userSelect: 'none',
-                        },
-                      })}
-                    >
-                      {(() => {
-                        if (!connected) {
-                          return (
-                            <div className="!visible mt-2 hidden bg-[#fff] py-3 px-3 rounded-2xl text-center items-center md:mt-0 md:!flex md:basis-auto hover:cursor-pointer"
-                              id="navbarSupportedContent3"
-                              onClick={openConnectModal}
-                              data-te-collapse-item>
+              {state?.connected === "false" &&
+                <ConnectButton.Custom>
+                  {({
+                    account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted,
+                  }) => {
+                    // Note: If your app doesn't use authentication, you
+                    // can remove all 'authenticationStatus' checks
+                    const ready = mounted && authenticationStatus !== 'loading';
+                    const connected = ready &&
+                      account
+                      &&
+                      chain &&
+                      (!authenticationStatus ||
+                        authenticationStatus === 'authenticated');
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                          'style': {
+                            opacity: 0,
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <div className="!visible mt-2 hidden bg-[#fff] py-3 px-3 rounded-2xl text-center items-center md:mt-0 md:!flex md:basis-auto hover:cursor-pointer"
+                                id="navbarSupportedContent3"
+                                onClick={openConnectModal}
+                                data-te-collapse-item>
 
-                              <div className="list-style-none mr-auto flex w-full flex-col pl-0 md:flex-row"
-                                data-te-navbar-nav-ref>
+                                <div className="list-style-none mr-auto flex w-full flex-col pl-0 md:flex-row"
+                                  data-te-navbar-nav-ref>
 
-                                <div
-                                  className="mb-4 pl-2 md:mb-0 md:pl-0 md:pr-1 mx-auto"
-                                  data-te-nav-item-ref>
-                                  <span
-                                    className="p- mono_font text-black text-xl text-center transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2"
-                                    data-te-nav-link-ref>Reshuffle</span>
+                                  <div
+                                    className="mb-4 pl-2 md:mb-0 md:pl-0 md:pr-1 mx-auto"
+                                    data-te-nav-item-ref>
+                                    <span
+                                      className="p- mono_font text-black text-xl text-center transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2"
+                                      data-te-nav-link-ref>Reshuffle</span>
+                                  </div>
                                 </div>
                               </div>
+                            );
+                          }
+                          if (chain.unsupported) {
+                            return (
+                              <button onClick={openChainModal} type="button">
+                                Wrong network
+                              </button>
+                            );
+                          }
+                          return (
+                            <div style={{ display: 'flex', gap: 12 }} className="border rounded-2xl p-4">
+                              <button
+                                onClick={openChainModal}
+                                style={{ display: 'flex', alignItems: 'center' }}
+                                type="button"
+                              >
+                                {chain.hasIcon && (
+                                  <div
+                                    style={{
+                                      background: chain.iconBackground,
+                                      width: 12,
+                                      height: 12,
+                                      borderRadius: 999,
+                                      overflow: 'hidden',
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {chain.iconUrl && (
+                                      <img
+                                        alt={chain.name ?? 'Chain icon'}
+                                        src={chain.iconUrl}
+                                        style={{ width: 12, height: 12 }} />
+                                    )}
+                                  </div>
+                                )}
+                                {chain.name}
+                              </button>
+                              <button onClick={openAccountModal} type="button">
+                                {account.displayName}
+                                {account.displayBalance
+                                  ? ` (${account.displayBalance})`
+                                  : ''}
+                              </button>
                             </div>
                           );
-                        }
-                        if (chain.unsupported) {
-                          return (
-                            <button onClick={openChainModal} type="button">
-                              Wrong network
-                            </button>
-                          );
-                        }
-                        return (
-                          <div style={{ display: 'flex', gap: 12 }} className="border rounded-2xl p-4">
-                            <button
-                              onClick={openChainModal}
-                              style={{ display: 'flex', alignItems: 'center' }}
-                              type="button"
-                            >
-                              {chain.hasIcon && (
-                                <div
-                                  style={{
-                                    background: chain.iconBackground,
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: 999,
-                                    overflow: 'hidden',
-                                    marginRight: 4,
-                                  }}
-                                >
-                                  {chain.iconUrl && (
-                                    <img
-                                      alt={chain.name ?? 'Chain icon'}
-                                      src={chain.iconUrl}
-                                      style={{ width: 12, height: 12 }} />
-                                  )}
-                                </div>
-                              )}
-                              {chain.name}
-                            </button>
-                            <button onClick={openAccountModal} type="button">
-                              {account.displayName}
-                              {account.displayBalance
-                                ? ` (${account.displayBalance})`
-                                : ''}
-                            </button>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  );
-                }}
-              </ConnectButton.Custom>
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
+              }
 
-              {connected &&
+              {state?.connected === "true" &&
                 <button disabled={!cwriteWrite} onClick={() => { cwriteWrite(); setClicked(true) }} className="!visible mt-2 hidden bg-[#fff] py-3 px-3 rounded-2xl text-center items-center md:mt-0 md:!flex md:basis-auto hover:cursor-pointer"
                   id="navbarSupportedContent3"
                   //  onClick={openConnectModal}
@@ -184,7 +198,7 @@ export default function Home() {
       <div className="bg-whit w-full md:max-w-2xl rounded-xl mx-auto">
         <div>
           <div className="container mx-auto mt-8">
-            <Matrix data={numbersArray} x={x} y={y} />
+            <MatrixSSR data={numbersArray} x={x} y={y} />
           </div>
         </div>
       </div>
@@ -195,8 +209,8 @@ export default function Home() {
       </div>
 
       <NoInteract getStatus={getStatus} x={x} y={y} />
-      {state?.color !== "undefined" &&
-        <span className='w-full text-center block'>Current Color - {state?.color}</span>
+      {(state?.color !== "undefined" && state?.outBounds === "false") &&
+        <span className='w-full text-center block'>Current Color at {x === "" ? 0 : x} and {y === "" ? 0 : y} co-ordinates - {state?.color}</span>
       }
 
     </main>

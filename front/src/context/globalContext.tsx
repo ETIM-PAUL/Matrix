@@ -4,11 +4,18 @@ export const GlobalContext = createContext<any>(null);
 const initialState = {
   fetch: false,
   color: false,
-  entry: {},
+  outBounds: false,
+  connected: false,
 };
 
 const reducer = (state: any, action: any) => {
   switch (action.type) {
+    case "SET_CONNECTED":
+      localStorage.setItem("connected", action.payload);
+      return {
+        ...state,
+        connected: localStorage.getItem("connected"),
+      };
     case "SET_FETCH":
       localStorage.setItem("fetch", action.payload);
       return {
@@ -21,11 +28,11 @@ const reducer = (state: any, action: any) => {
         ...state,
         color: localStorage.getItem("color"),
       };
-    case "SET_ENTRY":
-      localStorage.setItem("entry", action.payload);
+    case "SET_OUT":
+      localStorage.setItem("outBounds", action.payload);
       return {
         ...state,
-        entry: localStorage.getItem("entry"),
+        outBounds: localStorage.getItem("outBounds"),
       };
     default:
       return state;

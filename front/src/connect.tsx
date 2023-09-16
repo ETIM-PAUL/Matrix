@@ -29,19 +29,13 @@ const InteractButton = ({ getStatus, x, y }: any) => {
   function checkBound() {
     dispatch({ type: "SET_FETCH", payload: false })
 
-    if (x > 4 && y > 6) {
+    if ((x > 4 && y > 6) || (x > 4 || y > 6)) {
       toast.error("out of bounds")
-      setClicked(false)
-    }
-    if (x > 4) {
-      toast.error("out of bounds")
-      setClicked(false)
-    }
-    if (y > 6) {
-      toast.error("out of bounds")
+      dispatch({ type: "SET_OUT", payload: true })
       setClicked(false)
     }
     else {
+      dispatch({ type: "SET_OUT", payload: false })
       setClicked(true)
     }
   }
