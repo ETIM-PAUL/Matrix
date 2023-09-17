@@ -35,7 +35,9 @@ contract RandomMatrix {
     function fillMatrix() public {
         for (uint8 i = 0; i < 5; i++) {
             for (uint8 j = 0; j < 7; j++) {
-                matrix[i][j] = random(abi.encodePacked(i * j, "idan", j + 1));
+                matrix[i][j] = random(
+                    abi.encodePacked(i * j, "idan", j + 1, block.timestamp)
+                );
             }
         }
     }

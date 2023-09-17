@@ -15,7 +15,7 @@ const InteractButton = ({ getStatus, x, y }: any) => {
   const { data, isError, isLoading } = useContractReads({
     contracts: [
       {
-        address: "0x0073fA7F3BC4f5EC5035B1B50c05A48b43D048eF",
+        address: "0xe9BcD5181ee645986aa872eB93d1514F27cc5567",
         //@ts-ignore
         abi: MatrixABI?.abi,
         functionName: 'getColor',
